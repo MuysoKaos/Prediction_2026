@@ -8,5 +8,5 @@ datosmodel = crear_data_model(historial,valores)
 modelo_goles_hechos <- pscl ::zeroinfl(goles1 ~   diffatk + diffdef , data = datosmodel,
                                        family = "poisson", link = "logit")
 
-modelo_goles_recibidos <- pscl ::zeroinfl(goles2 ~ diffatk + diffdef , data = datosmodel,
+modelo_goles_recibidos <- pscl ::zeroinfl(goles2 ~ diffatk + diffdef, data = datosmodel,
                                           family = "poisson", link = "logit")
