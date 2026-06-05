@@ -59,8 +59,6 @@ server_predict = function(id){
 
       #save(equipo,datos_equipo1,datos_equipo2, file = "tosee_data_team_2.RData")
 
-      datos_equipo = valores |>
-        dplyr::filter(Equipo == equipo)
 
       input_equipo = data.frame(
         equipo1 = equipo,
