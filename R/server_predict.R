@@ -14,14 +14,16 @@ server_predict = function(id){
       equipo = equipo1_()
 
       valores |>
-        dplyr::filter(Equipo == equipo)
+        dplyr::filter(Equipo == equipo)|>
+        dplyr::left_join(datos_w, by = c("Equipo"="equipo1"))
     })
 
     datos_equipo2_ = shiny::reactive({
       equipo = equipo2_()
 
       valores |>
-        dplyr::filter(Equipo == equipo)
+        dplyr::filter(Equipo == equipo)|>
+        dplyr::left_join(datos_w, by = c("Equipo"="equipo1"))
     })
 
     data_team_1_ = shiny::reactive({
@@ -35,14 +37,30 @@ server_predict = function(id){
       input_equipo_1 = data.frame(
         equipo1 = equipo,
         diffatk = datos_equipo1$ATK/datos_equipo2$DEF,
-        diffdef = datos_equipo1$DEF/datos_equipo2$ATK
+        diffdef = datos_equipo1$DEF/datos_equipo2$ATK,
+        atK_win = datos_equipo1$atK_win,
+        deff_win = datos_equipo1$deff_win,
+        atK_loss = datos_equipo1$atK_loss,
+        deff_loss = datos_equipo1$deff_loss
       )
 
-      probabilidades <- predict(modelo_goles_hechos, newdata = input_equipo_1, type = "prob")
+      input_equipo_1_norm = input_equipo_1 |>
+        dplyr::mutate(diffatk = (diffatk-mean(datosmodel$diffatk))/sd(datosmodel$diffatk),
+                      diffdef = (diffdef-mean(datosmodel$diffdef))/sd(datosmodel$diffdef),
+                      atK_win = (atK_win-mean(datosmodel$atK_win))/sd(datosmodel$atK_win),
+                      deff_win = (deff_win-mean(datosmodel$deff_win))/sd(datosmodel$deff_win),
+                      atK_loss = (atK_loss-mean(datosmodel$atK_loss))/sd(datosmodel$atK_loss),
+                      deff_loss = (deff_loss-mean(datosmodel$deff_loss))/sd(datosmodel$deff_loss))
+
+
+      probabilidades <- predict(modelo_goles_hechos, newdata = input_equipo_1_norm, type = "prob")
+
       goles1 <- probabilidades[, c("0", "1", "2", "3", "4", "5")]
       goles1 = goles1/sum(goles1)
 
-      probabilidades <- predict(modelo_goles_recibidos, newdata = input_equipo_1, type = "prob")
+      probabilidades <- predict(modelo_goles_recibidos, newdata = input_equipo_1_norm, type = "prob")
+
+
       goles_rec_1 <- probabilidades[, c("0", "1", "2", "3", "4", "5")]
       goles_rec_1 = goles_rec_1/sum(goles_rec_1)
 
@@ -63,14 +81,28 @@ server_predict = function(id){
       input_equipo = data.frame(
         equipo1 = equipo,
         diffatk = datos_equipo1$ATK/datos_equipo2$DEF,
-        diffdef = datos_equipo1$DEF/datos_equipo2$ATK
+        diffdef = datos_equipo1$DEF/datos_equipo2$ATK,
+        atK_win = datos_equipo1$atK_win,
+        deff_win = datos_equipo1$deff_win,
+        atK_loss = datos_equipo1$atK_loss,
+        deff_loss = datos_equipo1$deff_loss
       )
 
-      probabilidades <- predict(modelo_goles_hechos, newdata = input_equipo, type = "prob")
+      input_equipo_norm = input_equipo |>
+        dplyr::mutate(diffatk = (diffatk-mean(datosmodel$diffatk))/sd(datosmodel$diffatk),
+                      diffdef = (diffdef-mean(datosmodel$diffdef))/sd(datosmodel$diffdef),
+                      atK_win = (atK_win-mean(datosmodel$atK_win))/sd(datosmodel$atK_win),
+                      deff_win = (deff_win-mean(datosmodel$deff_win))/sd(datosmodel$deff_win),
+                      atK_loss = (atK_loss-mean(datosmodel$atK_loss))/sd(datosmodel$atK_loss),
+                      deff_loss = (deff_loss-mean(datosmodel$deff_loss))/sd(datosmodel$deff_loss))
+
+      probabilidades <- predict(modelo_goles_hechos, newdata = input_equipo_norm, type = "prob")
+
       goles1 <- probabilidades[, c("0", "1", "2", "3", "4", "5")]
       goles1 = goles1/sum(goles1)
 
-      probabilidades <- predict(modelo_goles_recibidos, newdata = input_equipo, type = "prob")
+      probabilidades <- predict(modelo_goles_recibidos, newdata = input_equipo_norm, type = "prob")
+
       goles_rec_1 <- probabilidades[, c("0", "1", "2", "3", "4", "5")]
       goles_rec_1 = goles_rec_1/sum(goles_rec_1)
 
