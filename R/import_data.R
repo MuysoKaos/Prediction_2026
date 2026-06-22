@@ -64,8 +64,8 @@ modelo_goles_hechos <- pscl::zeroinfl(goles1 ~   diffatk+atK_win |
 
 #summary(modelo_goles_hechos)
 
-modelo_goles_recibidos <- pscl::zeroinfl(goles2 ~ diffdef+deff_win |
-                                           atK_win,
+modelo_goles_recibidos <- pscl::zeroinfl(goles2 ~ diffatk+diffdef+atK_win |
+                                           deff_win,
                                          data = datos_std_out,
                                          dist = "negbin", link = "probit")
 
