@@ -19,7 +19,7 @@ resul = datosmodel |>
   dplyr::ungroup()
 
 
-avg_w2 = resul |>
+avg_w = resul |>
   dplyr::filter(resul != "Losses") |>
   dplyr::group_by(equipo1) |>
   dplyr::summarise(atK_win = mean(ATK)*dplyr::n()/mean(encuentros),
@@ -58,13 +58,13 @@ datos_std_out = datos_std |>
 
 #diffatk+diffdef+atK_win+deff_win+atK_loss+deff_loss
 modelo_goles_hechos <- pscl::zeroinfl(goles1 ~   diffatk+atK_win |
-                                        diffdef,
+                                        diffdef+deff_win,
                                       data = datos_std_out,
                                       dist = "negbin", link = "probit")
 
 #summary(modelo_goles_hechos)
 
-modelo_goles_recibidos <- pscl::zeroinfl(goles2 ~ diffatk+diffdef+atK_win |
+modelo_goles_recibidos <- pscl::zeroinfl(goles2 ~ diffatk+diffdef+deff_win |
                                            deff_win,
                                          data = datos_std_out,
                                          dist = "negbin", link = "probit")
